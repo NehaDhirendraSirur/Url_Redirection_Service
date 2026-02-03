@@ -1,7 +1,7 @@
 package com.neha.urlredirection.controller;
 
 import com.neha.urlredirection.model.UrlMapping;
-import com.neha.urlredirection.repository.UrlMappingRepository;
+import com.neha.urlredirection.service.UrlMappingService;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.web.bind.annotation.*;
 
@@ -11,29 +11,21 @@ import java.io.IOException;
 @RequestMapping("/r")
 public class RedirectController {
 
-    private final UrlMappingRepository repository;
+    private final UrlMappingService service;
 
-    public RedirectController(UrlMappingRepository repository) {
-        this.repository = repository;
+    public RedirectController(UrlMappingService service) {
+        this.service = service;
     }
 
-   @GetMapping("/{shortCode}")
-public void redirect(
-        @PathVariable String shortCode,
-        HttpServletResponse response
-) throws IOException {
+    @GetMapping("/{shortCode}")
+    public void redirect(
+            @PathVariable String shortCode,
+            HttpServletResponse response
+    ) throws IOException {
 
-    UrlMapping mapping = repository.findByShortCode(shortCode)
-            .orElseThrow(() -> new RuntimeException("Short URL not found"));
+        UrlMapping mapping = service.getAndTrackValidUrl(shortCode);
 
-    // ✅ increment click count
-    mapping.setClickCount(
-            mapping.getClickCount() == null ? 1 : mapping.getClickCount() + 1
-    );
-
-    repository.save(mapping); // UPDATE happens here
-
-    response.setStatus(HttpServletResponse.SC_FOUND); // 302
-    response.sendRedirect(mapping.getOriginalUrl());
-}
+        response.setStatus(HttpServletResponse.SC_FOUND); // 302
+        response.sendRedirect(mapping.getOriginalUrl());
+    }
 }
