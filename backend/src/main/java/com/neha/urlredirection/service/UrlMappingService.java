@@ -1,6 +1,8 @@
 package com.neha.urlredirection.service;
 
 import com.neha.urlredirection.exception.UrlExpiredException;
+import com.neha.urlredirection.exception.UrlNotFoundException;
+import com.neha.urlredirection.dto.UrlStatsResponse;
 import com.neha.urlredirection.model.UrlMapping;
 import com.neha.urlredirection.repository.UrlMappingRepository;
 import org.springframework.stereotype.Service;
@@ -32,7 +34,7 @@ public class UrlMappingService {
     // ---------------- REDIRECT + TRACK ----------------
     public UrlMapping getAndTrackValidUrl(String shortCode) {
         UrlMapping mapping = repository.findByShortCode(shortCode)
-                .orElseThrow(() -> new RuntimeException("Short URL not found"));
+                .orElseThrow(() -> new UrlNotFoundException("Short URL not found"));
 
         // expiry check (safe even if null)
         if (mapping.getExpiresAt() != null &&
@@ -55,4 +57,24 @@ public class UrlMappingService {
         } while (repository.findByShortCode(code).isPresent());
         return code;
     }
+
+    // ---------------- STATS ----------------
+
+    public UrlStatsResponse getUrlStats(String shortCode) {
+    UrlMapping mapping = repository.findByShortCode(shortCode)
+            .orElseThrow(() -> new UrlNotFoundException("Short URL not found"));
+
+    boolean expired =
+            mapping.getExpiresAt() != null &&
+            mapping.getExpiresAt().isBefore(LocalDateTime.now());
+
+    return new UrlStatsResponse(
+            mapping.getOriginalUrl(),
+            mapping.getShortCode(),
+            mapping.getClickCount(),
+            mapping.getCreatedAt(),
+            mapping.getExpiresAt(),
+            expired
+    );
+}
 }

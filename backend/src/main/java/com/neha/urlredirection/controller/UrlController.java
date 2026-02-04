@@ -3,9 +3,11 @@ package com.neha.urlredirection.controller;
 import com.neha.urlredirection.dto.CreateUrlRequest;
 import com.neha.urlredirection.dto.CreateUrlResponse;
 import com.neha.urlredirection.model.UrlMapping;
+import com.neha.urlredirection.dto.UrlStatsResponse;
 import com.neha.urlredirection.service.UrlMappingService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
+import jakarta.validation.Valid;  
 
 @RestController
 @RequestMapping("/api/v1/urls")
@@ -22,7 +24,7 @@ public class UrlController {
 
     @PostMapping
     public CreateUrlResponse createShortUrl(
-            @RequestBody CreateUrlRequest request) {
+        @Valid @RequestBody CreateUrlRequest request) {
 
         UrlMapping mapping =
                 service.createShortUrl(request.getOriginalUrl());
@@ -30,5 +32,10 @@ public class UrlController {
         return new CreateUrlResponse(
                 baseUrl + "/r/" + mapping.getShortCode()
         );
+    }
+
+    @GetMapping("/{shortCode}/stats")
+    public UrlStatsResponse getStats(@PathVariable String shortCode) {
+        return service.getUrlStats(shortCode);
     }
 }
