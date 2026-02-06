@@ -4,7 +4,7 @@ import com.neha.urlredirection.dto.CreateUrlRequest;
 import com.neha.urlredirection.dto.CreateUrlResponse;
 import com.neha.urlredirection.model.UrlMapping;
 import com.neha.urlredirection.dto.UrlStatsResponse;
-import com.neha.urlredirection.service.UrlMappingService;
+import com.neha.urlredirection.service.UrlService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 import jakarta.validation.Valid;  
@@ -13,12 +13,12 @@ import jakarta.validation.Valid;
 @RequestMapping("/api/v1/urls")
 public class UrlController {
 
-    private final UrlMappingService service;
+    private final UrlService service;
 
     @Value("${app.base-url}")
     private String baseUrl;
 
-    public UrlController(UrlMappingService service) {
+    public UrlController(UrlService service) {
         this.service = service;
     }
 

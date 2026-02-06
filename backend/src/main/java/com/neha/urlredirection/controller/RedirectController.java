@@ -1,7 +1,7 @@
 package com.neha.urlredirection.controller;
 
 import com.neha.urlredirection.model.UrlMapping;
-import com.neha.urlredirection.service.UrlMappingService;
+import com.neha.urlredirection.service.UrlService;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.web.bind.annotation.*;
 
@@ -11,9 +11,9 @@ import java.io.IOException;
 @RequestMapping("/r")
 public class RedirectController {
 
-    private final UrlMappingService service;
+    private final UrlService service;
 
-    public RedirectController(UrlMappingService service) {
+    public RedirectController(UrlService service) {
         this.service = service;
     }
 
